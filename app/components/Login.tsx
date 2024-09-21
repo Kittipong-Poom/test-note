@@ -3,14 +3,16 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import Swal from 'sweetalert2'
+import Swal from "sweetalert2";
 const Login: React.FC = () => {
-  const [user, setUser] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [user, setUser] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string>("");
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     e.preventDefault();
 
     try {
@@ -22,6 +24,7 @@ const Login: React.FC = () => {
       if (response.status === 200) {
         // Save the token to localStorage or cookie
         localStorage.setItem("token", response.data.token);
+        localStorage.setItem("user", user);
         // Redirect to the todo list
         router.push("/todolist");
         Swal.fire({
@@ -29,7 +32,7 @@ const Login: React.FC = () => {
           icon: "success",
           title: "เข้าสู่ระบบสำเร็จ",
           showConfirmButton: false,
-          timer: 1000
+          timer: 1000,
         });
       } else {
         setError(response.data.message || "Login failed");
@@ -49,8 +52,8 @@ const Login: React.FC = () => {
           </h2>
 
           <form className="mt-8" onSubmit={handleSubmit}>
-            <div>ชื่อผู้ใช้งาน: testuser</div>
-            <div>รหัสผ่าน: password123</div>
+            <div>ชื่อผู้ใช้งาน: Johndoe</div>
+            <div>รหัสผ่าน: john1234</div>
             <div className="space-y-5">
               <div>
                 <label className="text-base font-medium text-gray-900">
