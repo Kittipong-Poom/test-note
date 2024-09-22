@@ -33,8 +33,6 @@ const CardNote: React.FC = () => {
   const indexOfFirstCard = indexOfLastCard - itemsPerPage;
   const currentCards = filteredCards.slice(indexOfFirstCard, indexOfLastCard);
 
-
-  
   // Open dialog for editing
   const handleEditClick = (card: CardData) => {
     setEditData({

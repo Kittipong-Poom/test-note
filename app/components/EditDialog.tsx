@@ -29,9 +29,6 @@ const EditDialog: React.FC<EditDialogProps> = ({
     }
   };
 
-
-
-
   if (!isOpen || !editData) return null;
 
   return (

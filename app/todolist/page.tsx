@@ -38,8 +38,6 @@ const Page: React.FC = () => {
     setSelectedDate(selected);
   };
 
-  
-
   const handleSubmit = async () => {
     if (!title || !content || !namecreator || !selectedDate || !tag) {
       alert("กรุณากรอกข้อมูลให้ครบถ้วน");
