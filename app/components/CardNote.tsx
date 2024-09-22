@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import EditDialog from "./EditDialog";
 import Pagination from "./Pagination";
 import FilterSortBar from "./FilterSortBar";
+
 export interface CardData {
   id: number;
   title: string;
@@ -21,19 +22,25 @@ const CardNote: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editData, setEditData] = useState<CardData | null>(null);
   const [namecreator, setNameCreator] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedTag, setSelectedTag] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<"ascending" | "descending">(
     "ascending"
   );
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 3; // จำนวนการ์ดต่อหน้า
   const indexOfLastCard = currentPage * itemsPerPage;
   const indexOfFirstCard = indexOfLastCard - itemsPerPage;
   const currentCards = filteredCards.slice(indexOfFirstCard, indexOfLastCard);
 
+
+  
   // Open dialog for editing
   const handleEditClick = (card: CardData) => {
-    setEditData(card);
+    setEditData({
+      ...card,
+      day_date: new Date(card.day_date).toISOString().split("T")[0], // แปลงให้เป็นรูปแบบ YYYY-MM-DD
+    });
     setIsDialogOpen(true);
   };
 
@@ -76,8 +83,9 @@ const CardNote: React.FC = () => {
 
   // Handle save changes
   const handleSaveChanges = async (data: CardData) => {
+    const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
     try {
-      await axios.put(`http://localhost:5000/edittodolist/${data.id}`, data);
+      await axios.put(`${baseURL}/edittodolist/${data.id}`, data);
       setCards(cards.map((card) => (card.id === data.id ? data : card)));
       setFilteredCards(
         filteredCards.map((card) => (card.id === data.id ? data : card))
@@ -100,21 +108,25 @@ const CardNote: React.FC = () => {
 
   // Fetch cards from API
   const fetchCards = async () => {
+    const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
     try {
-      const response = await axios.get<CardData[]>(
-        "http://localhost:5000/todolist"
-      );
+      setIsLoading(true); // เริ่มการโหลด
+      const response = await axios.get<CardData[]>(`${baseURL}/todolist`);
+      
       if (Array.isArray(response.data)) {
-        setCards(response.data); // Set cards
-        setFilteredCards(response.data); // Set filtered cards to all initially
+        setCards(response.data);
+        setFilteredCards(response.data);
       } else {
         console.error("Expected an array but got:", response.data);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
+    } finally {
+      setIsLoading(false); // หยุดการโหลด
     }
   };
-  useEffect(() => {
+
+  useEffect(()=> {
     fetchCards();
 
     const storedUser = localStorage.getItem("user");
@@ -125,6 +137,7 @@ const CardNote: React.FC = () => {
 
   // Handle card delete
   const handleDelete = async (id: number) => {
+    const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
     try {
       const result = await Swal.fire({
         title: "คุณแน่ใจว่าจะลบ?",
@@ -137,7 +150,7 @@ const CardNote: React.FC = () => {
         confirmButtonText: "ใช่! ผมจะลบ",
       });
       if (result.isConfirmed) {
-        await axios.delete(`http://localhost:5000/todolist/${id}`);
+        await axios.delete(`${baseURL}/todolist/${id}`);
         const updatedCards = cards.filter((card) => card.id !== id);
         setCards(updatedCards);
         setFilteredCards(updatedCards); // Update filteredCards when deleting
@@ -155,82 +168,88 @@ const CardNote: React.FC = () => {
 
   return (
     <section>
-      <FilterSortBar
-        setSelectedTag={setSelectedTag}
-        filterByTag={filterByTag}
-        filterByMonth={filterByMonth}
-        sortByDate={sortByDate}
-      />
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {currentCards.map((card) => (
-          <div
-            key={card.id}
-            className="relative flex flex-col my-6 bg-white shadow-sm border border-slate-200 rounded-lg w-96"
-          >
-            <div className="p-4">
-              <div className="flex flex-1 justify-between">
-                <h5 className="mb-2 text-slate-800 text-xl font-semibold">
-                  {card.title}
-                </h5>
-                <h5 className="mb-2 text-slate-800 text-xl font-semibold underline">
-                  #{card.tag}
-                </h5>
-              </div>
-              <p className="text-slate-600 leading-normal font-light">
-                {card.content}
-              </p>
-
-              <div className="flex justify-between mt-4">
-                <h5 className="text-slate-800 text-xl font-semibold items-center">
-                  <h2>ชื่อผู้สร้าง</h2>
-                  {card.my_create}
-                </h5>
-                <h5 className="text-slate-800 text-xl font-semibold ">
-                  <h2>วันที่ต้องทำ</h2>
-                  {new Date(card.day_date).toLocaleDateString("th-TH")}
-                </h5>
-              </div>
-              <div className="justify-end flex">
-                <button
-                  className="rounded-md mr-3 bg-green-600 py-2 px-4 mt-6 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg hover:animate-pulse"
-                  type="button"
-                  onClick={() => handleEditClick(card)}
-                >
-                  แก้ไข
-                </button>
-
-                <button
-                  onClick={() => handleDelete(card.id)}
-                  className="rounded-md bg-red-500 py-2 px-4 mt-6 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg hover:animate-bounce"
-                  type="button"
-                >
-                  ลบ
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
-
-        {/* Modal for editing */}
-        {isDialogOpen && editData && (
-          <EditDialog
-            isOpen={isDialogOpen}
-            editData={editData}
-            onClose={handleCloseDialog}
-            onSave={handleSaveChanges}
-            nameCreator={namecreator}
-            setNameCreator={setNameCreator}
-            setEditData={setEditData}
+      {isLoading ? (
+        <div className="text-center text-xl font-semibold">Loading...</div>
+      ) : (
+        <div>
+          <FilterSortBar
+            setSelectedTag={setSelectedTag}
+            filterByTag={filterByTag}
+            filterByMonth={filterByMonth}
+            sortByDate={sortByDate}
           />
-        )}
-      </div>
-      <Pagination
-        currentPage={currentPage}
-        totalItems={filteredCards.length}
-        itemsPerPage={itemsPerPage}
-        onPageChange={setCurrentPage}
-      />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {currentCards.map((card) => (
+              <div
+                key={card.id}
+                className="relative flex flex-col my-6 bg-white shadow-sm border border-slate-200 rounded-lg w-96"
+              >
+                <div className="p-4">
+                  <div className="flex flex-1 justify-between">
+                    <h5 className="mb-2 text-slate-800 text-xl font-semibold">
+                      {card.title}
+                    </h5>
+                    <h5 className="mb-2 text-slate-800 text-xl font-semibold underline">
+                      #{card.tag}
+                    </h5>
+                  </div>
+                  <p className="text-slate-600 leading-normal font-light">
+                    {card.content}
+                  </p>
+
+                  <div className="flex justify-between mt-4">
+                    <h5 className="text-slate-800 text-xl font-semibold items-center">
+                      <h2>ชื่อผู้สร้าง</h2>
+                      {card.my_create}
+                    </h5>
+                    <h5 className="text-slate-800 text-xl font-semibold ">
+                      <h2>วันที่ต้องทำ</h2>
+                      {new Date(card.day_date).toLocaleDateString("th-TH")}
+                    </h5>
+                  </div>
+                  <div className="justify-end flex">
+                    <button
+                      className="rounded-md mr-3 bg-green-600 py-2 px-4 mt-6 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg hover:animate-pulse"
+                      type="button"
+                      onClick={() => handleEditClick(card)}
+                    >
+                      แก้ไข
+                    </button>
+
+                    <button
+                      onClick={() => handleDelete(card.id)}
+                      className="rounded-md bg-red-500 py-2 px-4 mt-6 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg hover:animate-bounce"
+                      type="button"
+                    >
+                      ลบ
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {/* Modal for editing */}
+            {isDialogOpen && editData && (
+              <EditDialog
+                isOpen={isDialogOpen}
+                editData={editData}
+                onClose={handleCloseDialog}
+                onSave={handleSaveChanges}
+                nameCreator={namecreator}
+                setNameCreator={setNameCreator}
+                setEditData={setEditData}
+              />
+            )}
+          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalItems={filteredCards.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+          />
+        </div>
+      )}
     </section>
   );
 };

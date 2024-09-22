@@ -14,9 +14,9 @@ const Login: React.FC = () => {
     e: React.FormEvent<HTMLFormElement>
   ): Promise<void> => {
     e.preventDefault();
-
+    const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/login"
     try {
-      const response = await axios.post("http://localhost:5000/login", {
+      const response = await axios.post(`${baseURL}`, {
         user,
         password,
       });

@@ -1,5 +1,5 @@
 import React from "react";
-
+import dayjs from "dayjs";
 // Import CardData interface
 import { CardData } from "./CardNote"; // Adjust the import path as needed
 
@@ -22,11 +22,15 @@ const EditDialog: React.FC<EditDialogProps> = ({
   setNameCreator,
   setEditData, // Destructure here
 }) => {
+
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (editData) {
       setEditData({ ...editData, day_date: e.target.value });
     }
   };
+
+
+
 
   if (!isOpen || !editData) return null;
 
@@ -52,7 +56,7 @@ const EditDialog: React.FC<EditDialogProps> = ({
         <h2 className="text-xl">วันที่ต้องทำ</h2>
         <input
           type="date"
-          value={editData.day_date}
+          value={dayjs(editData.day_date).format("YYYY-MM-DD")}
           onChange={handleDateChange}
           className="border border-gray-300 rounded p-2 w-full mb-4"
         />

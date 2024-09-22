@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import Pagination from "../components/Pagination";
+
 import { useState, useEffect } from "react";
 import CardNote from "../components/CardNote";
 import axios from "axios";
@@ -38,12 +38,14 @@ const Page: React.FC = () => {
     setSelectedDate(selected);
   };
 
+  
+
   const handleSubmit = async () => {
     if (!title || !content || !namecreator || !selectedDate || !tag) {
       alert("กรุณากรอกข้อมูลให้ครบถ้วน");
       return; // ไม่ให้ดำเนินการต่อถ้ายังไม่ได้กรอกข้อมูล
     }
-
+    const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
     try {
       const newNote = {
         title,
@@ -52,10 +54,7 @@ const Page: React.FC = () => {
         day_date: selectedDate,
         tag,
       };
-      const response = await axios.post(
-        "http://localhost:5000/createtodo",
-        newNote
-      );
+      const response = await axios.post(`${baseURL}/createtodo`, newNote);
 
       if (response.status === 200) {
         Swal.fire({
@@ -69,6 +68,7 @@ const Page: React.FC = () => {
         setContent("");
         setTag("");
         setSelectedDate(new Date().toISOString().split("T")[0]);
+
       }
     } catch (error) {
       console.error("Error creating note:", error);
@@ -84,7 +84,7 @@ const Page: React.FC = () => {
         </h1>
       </div>
 
-      <div className=" w-[1200px] gap-9 justify-center grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  border-2 p-5 bg-[#9eaca6] rounded-lg">
+      <div className=" w-[1200px] gap-9 justify-center grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  border-2 p-5 bg-[#acd6e9] rounded-lg border-black">
         <div className="w-full max-w-sm min-w-[200px] mt-6">
           <h1 className="text-xl mb-2">หัวข้อเรื่อง</h1>
           <input
@@ -156,7 +156,6 @@ const Page: React.FC = () => {
         </div>
       </div>
       <CardNote />
-      
     </section>
   );
 };
