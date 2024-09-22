@@ -110,7 +110,7 @@ const CardNote: React.FC = () => {
     try {
       setIsLoading(true); // เริ่มการโหลด
       const response = await axios.get<CardData[]>(`${baseURL}/todolist`);
-      
+
       if (Array.isArray(response.data)) {
         setCards(response.data);
         setFilteredCards(response.data);
@@ -124,7 +124,7 @@ const CardNote: React.FC = () => {
     }
   };
 
-  useEffect(()=> {
+  useEffect(() => {
     fetchCards();
 
     const storedUser = localStorage.getItem("user");
@@ -165,7 +165,7 @@ const CardNote: React.FC = () => {
   };
 
   return (
-    <section>
+    <section className="mx-auto justify-center">
       {isLoading ? (
         <div className="text-center text-xl font-semibold">Loading...</div>
       ) : (
@@ -198,11 +198,11 @@ const CardNote: React.FC = () => {
 
                   <div className="flex justify-between mt-4">
                     <h5 className="text-slate-800 text-xl font-semibold items-center">
-                      <h2>ชื่อผู้สร้าง</h2>
+                      <div>ชื่อผู้สร้าง</div>
                       {card.my_create}
                     </h5>
                     <h5 className="text-slate-800 text-xl font-semibold ">
-                      <h2>วันที่ต้องทำ</h2>
+                      <div>ชื่อผู้สร้าง</div>
                       {new Date(card.day_date).toLocaleDateString("th-TH")}
                     </h5>
                   </div>

@@ -43,15 +43,15 @@ const Login: React.FC = () => {
   };
 
   return (
-    <section className="min-h-screen flex items-center justify-center">
+    <section className="min-h-screen flex items-center justify-center ">
       <div className="flex bg-white items-center justify-center px-4 py-10 sm:px-6 sm:py-16 lg:px-8 lg:py-8">
-        <div className="w-[500px] xl:mx-auto shadow-md p-4 2xl:max-w-md">
+        <div className="w-full max-w-md shadow-md p-4 xl:mx-auto">
           <div className="mb-2 flex justify-center"></div>
           <h2 className="text-center text-2xl font-bold leading-tight text-black">
             Login For Note Easy
           </h2>
 
-          <form className="mt-8" onSubmit={handleSubmit}>
+          <form className="mt-8 " onSubmit={handleSubmit}>
             <div>ชื่อผู้ใช้งาน: Johndoe</div>
             <div>รหัสผ่าน: john1234</div>
             <div className="space-y-5">
