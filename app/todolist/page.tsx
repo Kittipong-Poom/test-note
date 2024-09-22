@@ -77,14 +77,14 @@ const Page: React.FC = () => {
   };
 
   return (
-    <section className="mt-5 flex flex-col  items-center justify-center">
+    <section className="mt-5 flex flex-col  items-center justify-center h-[800px]">
       <div className="bg-slate-900 w-fit hover:bg-[#708F51] duration-300 p-3 rounded-lg mb-4 ">
         <h1 className="text-white text-3xl capitalize text-center">
           note eazy app
         </h1>
       </div>
 
-      <div className=" w-[1200px] gap-9 justify-center grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  border-2 p-5 bg-slate-300 rounded-lg">
+      <div className=" w-[1200px] gap-9 justify-center grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  border-2 p-5 bg-[#9eaca6] rounded-lg">
         <div className="w-full max-w-sm min-w-[200px] mt-6">
           <h1 className="text-xl mb-2">หัวข้อเรื่อง</h1>
           <input
