@@ -5,6 +5,14 @@ import { useState, useEffect } from "react";
 import CardNote from "../components/CardNote";
 import axios from "axios";
 import Swal from "sweetalert2";
+export interface CardData {
+  id: number;
+  title: string;
+  content: string;
+  my_create: string;
+  day_date: string;
+  tag: string;
+}
 
 const Page: React.FC = () => {
   const router = useRouter();
@@ -13,6 +21,7 @@ const Page: React.FC = () => {
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
   const [tag, setTag] = useState<string>("");
+  const [cards, setCards] = useState<CardData[]>([]);
 
   const getTodayThaiDate = () => {
     const today = new Date();
@@ -71,6 +80,7 @@ const Page: React.FC = () => {
       const response = await axios.post(`${baseURL}/createtodo`, newNote);
 
       if (response.status === 200) {
+        setCards((prevCards) => [...prevCards, response.data]);
         Swal.fire({
           position: "center",
           icon: "success",
@@ -177,7 +187,7 @@ const Page: React.FC = () => {
       </select>
     </div>
   </div>
-  <CardNote />
+  <CardNote cards={cards} setCards={setCards}/>
 </section>
   );
 };

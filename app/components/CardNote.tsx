@@ -16,9 +16,11 @@ export interface CardData {
   tag: string;
 }
 
-const CardNote: React.FC = () => {
-  const [cards, setCards] = useState<CardData[]>([]);
-  const [filteredCards, setFilteredCards] = useState<CardData[]>([]);
+const CardNote: React.FC<{
+  cards: CardData[];
+  setCards: React.Dispatch<React.SetStateAction<CardData[]>>;
+}> = ({ cards, setCards }) => {
+  const [filteredCards, setFilteredCards] = useState<CardData[]>(cards);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editData, setEditData] = useState<CardData | null>(null);
   const [namecreator, setNameCreator] = useState<string>("");
@@ -33,7 +35,7 @@ const CardNote: React.FC = () => {
   const indexOfFirstCard = indexOfLastCard - itemsPerPage;
   const currentCards = filteredCards.slice(indexOfFirstCard, indexOfLastCard);
 
-  // Open dialog for editing
+  // Open dialog for editing พอเปิด Dialog ขึ้นมาใหม่จะ ให้แสดงวันที่เป็น Default ที่เรากรอก
   const handleEditClick = (card: CardData) => {
     setEditData({
       ...card,
@@ -47,7 +49,7 @@ const CardNote: React.FC = () => {
     setIsDialogOpen(false);
   };
 
-  // Sort cards by date
+  // Sort cards by date อันนี้เรียงจาก น้อยไปหามาก และ จากมากไปหาน้อย
   const sortByDate = (order: "ascending" | "descending") => {
     const sorted = [...filteredCards].sort((a, b) => {
       const dateA = new Date(a.day_date).getTime();
@@ -58,7 +60,7 @@ const CardNote: React.FC = () => {
     setSortOrder(order); // Update the sort order state
   };
 
-  // Filter cards by month
+  // Filter cards by month แบ่งหมวดหมู่ตามเดือน
   const filterByMonth = (month: number | "") => {
     if (month === "") {
       setFilteredCards(cards); // Show all cards if no month is selected
@@ -79,7 +81,7 @@ const CardNote: React.FC = () => {
     }
   };
 
-  // Handle save changes
+  // Handle save Update เวลามีการแก้ไขข้อมูล
   const handleSaveChanges = async (data: CardData) => {
     const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
     try {
@@ -104,7 +106,7 @@ const CardNote: React.FC = () => {
     }
   };
 
-  // Fetch cards from API
+  // Fetch cards from API Get ข้อมูลมาจากหลังบ้าน
   const fetchCards = async () => {
     const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
     try {
@@ -124,6 +126,12 @@ const CardNote: React.FC = () => {
     }
   };
 
+  // useEffect ส่วนนี้จะเอาทำไว้ทำ วิธีมี ข้อมูลใหม่จะได้ hook ขึ้นมาทันที
+  useEffect(() => {
+    setFilteredCards(cards); // Update filtered cards only when cards change
+  }, [cards]); // This ensures filtering happens only when necessary
+
+  // useEffect ส่วนนี้เอาไว้ทำเวลามีการ get ข้อมูลจากหลังบ้านมาและดึง localStorage มาใช้
   useEffect(() => {
     fetchCards();
 
