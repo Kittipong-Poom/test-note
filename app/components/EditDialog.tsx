@@ -10,9 +10,8 @@ interface EditDialogProps {
   onSave: (data: CardData) => Promise<void>;
   nameCreator: string;
   setNameCreator: (name: string) => void;
-  setEditData: (data: CardData) => void; // Add this line
+  setEditData: (data: CardData) => void; 
 }
-
 const EditDialog: React.FC<EditDialogProps> = ({
   isOpen,
   editData,
@@ -20,7 +19,7 @@ const EditDialog: React.FC<EditDialogProps> = ({
   onSave,
   nameCreator,
   setNameCreator,
-  setEditData, // Destructure here
+  setEditData,
 }) => {
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,10 +67,9 @@ const EditDialog: React.FC<EditDialogProps> = ({
         </div>
         <div className="w-full min-w-[200px] mt-6">
           <h1 className="text-xl mb-2">เลือกประเภท Tag</h1>
-          {/* เพิ่ม label สำหรับ dropdown */}
           <select
-            value={editData.tag} // Bind the input value to the tag from editData
-            onChange={(e) => setEditData({ ...editData, tag: e.target.value })} // Update the tag in editData
+            value={editData.tag} 
+            onChange={(e) => setEditData({ ...editData, tag: e.target.value })} 
             className="w-full bg-transparent placeholder:text-slate-400 text-slate-700 bg-white text-sm border border-slate-200 rounded-md px-3 py-3 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
           >
             <option>เลือกประเภท#....</option>

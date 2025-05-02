@@ -30,26 +30,20 @@ const CardNote: React.FC<{
     "ascending"
   );
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const itemsPerPage = 3; // จำนวนการ์ดต่อหน้า
+  const itemsPerPage = 3;
   const indexOfLastCard = currentPage * itemsPerPage;
   const indexOfFirstCard = indexOfLastCard - itemsPerPage;
   const currentCards = filteredCards.slice(indexOfFirstCard, indexOfLastCard);
-
-  // Open dialog for editing พอเปิด Dialog ขึ้นมาใหม่จะ ให้แสดงวันที่เป็น Default ที่เรากรอก
   const handleEditClick = (card: CardData) => {
     setEditData({
       ...card,
-      day_date: new Date(card.day_date).toISOString().split("T")[0], // แปลงให้เป็นรูปแบบ YYYY-MM-DD
+      day_date: new Date(card.day_date).toISOString().split("T")[0],
     });
     setIsDialogOpen(true);
   };
-
-  // Close the edit dialog
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
   };
-
-  // Sort cards by date อันนี้เรียงจาก น้อยไปหามาก และ จากมากไปหาน้อย
   const sortByDate = (order: "ascending" | "descending") => {
     const sorted = [...filteredCards].sort((a, b) => {
       const dateA = new Date(a.day_date).getTime();
@@ -57,31 +51,26 @@ const CardNote: React.FC<{
       return order === "ascending" ? dateA - dateB : dateB - dateA;
     });
     setFilteredCards(sorted);
-    setSortOrder(order); // Update the sort order state
+    setSortOrder(order)
   };
-
-  // Filter cards by month แบ่งหมวดหมู่ตามเดือน
   const filterByMonth = (month: number | "") => {
     if (month === "") {
-      setFilteredCards(cards); // Show all cards if no month is selected
+      setFilteredCards(cards);
     } else {
       const filtered = cards.filter(
         (card) => new Date(card.day_date).getMonth() + 1 === month
       );
-      setFilteredCards(filtered); // Show only cards from the selected month
+      setFilteredCards(filtered);
     }
   };
-
   const filterByTag = (tag: string) => {
     if (tag === "") {
-      setFilteredCards(cards); // Show all cards
+      setFilteredCards(cards);
     } else {
       const filtered = cards.filter((card) => card.tag === tag);
       setFilteredCards(filtered);
     }
   };
-
-  // Handle save Update เวลามีการแก้ไขข้อมูล
   const handleSaveChanges = async (data: CardData) => {
     const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
     try {
@@ -105,12 +94,10 @@ const CardNote: React.FC<{
       });
     }
   };
-
-  // Fetch cards from API Get ข้อมูลมาจากหลังบ้าน
   const fetchCards = async () => {
     const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
     try {
-      setIsLoading(true); // เริ่มการโหลด
+      setIsLoading(true); 
       const response = await axios.get<CardData[]>(`${baseURL}/todolist`);
 
       if (Array.isArray(response.data)) {
@@ -122,26 +109,20 @@ const CardNote: React.FC<{
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
-      setIsLoading(false); // หยุดการโหลด
+      setIsLoading(false);
     }
   };
-
-  // useEffect ส่วนนี้จะเอาทำไว้ทำ วิธีมี ข้อมูลใหม่จะได้ hook ขึ้นมาทันที
   useEffect(() => {
-    setFilteredCards(cards); // Update filtered cards only when cards change
-  }, [cards]); // This ensures filtering happens only when necessary
-
-  // useEffect ส่วนนี้เอาไว้ทำเวลามีการ get ข้อมูลจากหลังบ้านมาและดึง localStorage มาใช้
+    setFilteredCards(cards)
+  }, [cards]); 
   useEffect(() => {
     fetchCards();
-
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setNameCreator(storedUser);
     }
   }, []);
 
-  // Handle card delete
   const handleDelete = async (id: number) => {
     const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
     try {
@@ -159,7 +140,7 @@ const CardNote: React.FC<{
         await axios.delete(`${baseURL}/todolist/${id}`);
         const updatedCards = cards.filter((card) => card.id !== id);
         setCards(updatedCards);
-        setFilteredCards(updatedCards); // Update filteredCards when deleting
+        setFilteredCards(updatedCards); 
         Swal.fire({
           title: "ลบแล้วข้อมูลแล้ว",
           text: "Your file has been deleted.",
@@ -171,7 +152,6 @@ const CardNote: React.FC<{
       alert("Fail to delete card");
     }
   };
-
   return (
     <section className="mx-auto justify-center">
       {isLoading ? (
@@ -184,7 +164,6 @@ const CardNote: React.FC<{
             filterByMonth={filterByMonth}
             sortByDate={sortByDate}
           />
-
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {currentCards.map((card) => (
               <div

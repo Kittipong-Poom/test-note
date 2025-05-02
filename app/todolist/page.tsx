@@ -25,23 +25,21 @@ const Page: React.FC = () => {
 
   const getTodayThaiDate = () => {
     const today = new Date();
-    const day = today.getDate().toString().padStart(2, "0"); // Add leading 0 if needed
-    const month = (today.getMonth() + 1).toString().padStart(2, "0"); // Add leading 0 if needed
-    const year = (today.getFullYear() + 543).toString(); // Convert to Buddhist Era
-    return `${day}/${month}/${year}`; // Return in DD/MM/YYYY format
+    const day = today.getDate().toString().padStart(2, "0");
+    const month = (today.getMonth() + 1).toString().padStart(2, "0"); 
+    const year = (today.getFullYear() + 543).toString(); 
+    return `${day}/${month}/${year}`; 
   };
 
   useEffect(() => {
     const today = new Date();
-    const defaultDate = today.toISOString().split("T")[0]; // Get current date in YYYY-MM-DD
+    const defaultDate = today.toISOString().split("T")[0]; 
     setSelectedDate(defaultDate);
-
-    // ดึงชื่อผู้ใช้จาก localStorage
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setNameCreator(storedUser);
     }
-  }, []); // เรียกใช้เมื่อ component ถูก mount
+  }, []);
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.value;
@@ -49,10 +47,8 @@ const Page: React.FC = () => {
   };
 
   const handleLogout = () => {
-    // ลบข้อมูลผู้ใช้จาก localStorage
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    // เปลี่ยนเส้นทางไปยังหน้า Login
     router.push("/");
     Swal.fire({
       position: "center",
@@ -62,11 +58,10 @@ const Page: React.FC = () => {
       timer: 1000,
     });
   };
-
   const handleSubmit = async () => {
     if (!title || !content || !namecreator || !selectedDate || !tag) {
       alert("กรุณากรอกข้อมูลให้ครบถ้วน");
-      return; // ไม่ให้ดำเนินการต่อถ้ายังไม่ได้กรอกข้อมูล
+      return
     }
     const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
     try {

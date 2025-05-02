@@ -22,10 +22,8 @@ const Login: React.FC = () => {
       });
 
       if (response.status === 200) {
-        // Save the token to localStorage or cookie
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("user", user);
-        // Redirect to the todo list
         router.push("/todolist");
         Swal.fire({
           position: "center",
